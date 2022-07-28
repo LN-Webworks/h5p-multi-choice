@@ -1,14 +1,14 @@
 {
   "semantics": [
     {
-      "label": "Medieelement",
+      "label": "Multimedia",
       "fields": [
         {
           "label": "Type",
-          "description": "Valgfritt medieelement. Elementet vil bli plassert over spørsmålet."
+          "description": "En valgfri mediakilde som vises over spørsmålet."
         },
         {
-          "label": "Deaktiver zoomingfunksjon."
+          "label": "Disable image zooming"
         }
       ]
     },
@@ -16,16 +16,16 @@
       "label": "Spørsmål"
     },
     {
-      "label": "Tilgjengelige valg",
-      "entity": "option",
+      "label": "Svaralternativer",
+      "entity": "verdi",
       "field": {
-        "label": "Option",
+        "label": "Svaralternativ",
         "fields": [
           {
             "label": "Tekst"
           },
           {
-            "label": "Correct"
+            "label": "Riktig"
           },
           {
             "label": "Tips",
@@ -48,26 +48,26 @@
       }
     },
     {
-      "label": "Tilbakemelding på hele oppgava",
+      "label": "Overall Feedback",
       "fields": [
         {
           "widgets": [
             {
-              "label": "Forhandsinnstilling"
+              "label": "Default"
             }
           ],
-          "label": "Opprett poengområder og legg inn tilbakemeldinger.",
-          "description": "Klikk på knappen \"Legg til poengområde\" og legg til så mange poengområder du trenger. Eksempel: 0–40 % Svakt resultat, 41–80 % Gjennomsnittlig resultat, 81–100 % Flott resultat!",
-          "entity": "Område",
+          "label": "Define custom feedback for any score range",
+          "description": "Click the \"Add range\" button to add as many ranges as you need. Example: 0-20% Bad score, 21-91% Average Score, 91-100% Great Score!",
+          "entity": "range",
           "field": {
             "fields": [
               {
-                "label": "Poengområde"
+                "label": "Score Range"
               },
               {},
               {
-                "label": "Tilbakemelding for definert poengområde",
-                "placeholder": "Skriv inn tilbakemelding."
+                "label": "Feedback for defined score range",
+                "placeholder": "Fill in the feedback"
               }
             ]
           }
@@ -80,10 +80,6 @@
         {
           "label": "Check answer button label",
           "default": "Sjekk"
-        },
-        {
-          "label": "Submit answer button label",
-          "default": "Submit"
         },
         {
           "label": "Show solution button label",

@@ -82,10 +82,6 @@
           "default": "Провери"
         },
         {
-          "label": "Submit answer button label",
-          "default": "Submit"
-        },
-        {
           "label": "Етикет за бутон Покажи решение",
           "default": "Покажи решение"
         },

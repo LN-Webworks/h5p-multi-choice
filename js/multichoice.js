@@ -62,11 +62,11 @@ H5P.MultiChoice = function (options, contentId, contentData) {
 
   // checkbox or radiobutton
   var texttemplate =
-    '<ul class="h5p-answers" role="<%= role %>" aria-labelledby="<%= label %>">' +
+    '<ul class="h5p-answers review-btns" role="<%= role %>" aria-labelledby="<%= label %>">' +
     '  <% for (var i=0; i < answers.length; i++) { %>' +
     '    <li class="h5p-answer" role="<%= answers[i].role %>" tabindex="<%= answers[i].tabindex %>" aria-checked="<%= answers[i].checked %>" data-id="<%= i %>">' +
     '      <div class="h5p-alternative-container">' +
-    '        <span class="h5p-alternative-inner"><%= answers[i].text %></span>' +
+    '        <span class="h5p-alternative-inner emoticon-<%= answers[i].text.replace(/<[^>]*>?/gm, "").trim() %>"><%= answers[i].text %></span>' +
     '      </div>' +
     '      <div class="h5p-clearfix"></div>' +
     '    </li>' +
@@ -92,7 +92,6 @@ H5P.MultiChoice = function (options, contentId, contentData) {
     userAnswers: [],
     UI: {
       checkAnswerButton: 'Check',
-      submitAnswerButton: 'Submit',
       showSolutionButton: 'Show solution',
       tryAgainButton: 'Try again',
       scoreBarLabel: 'You got :num out of :total points',
@@ -189,7 +188,7 @@ H5P.MultiChoice = function (options, contentId, contentData) {
     $feedbackDialog = $('' +
     '<div class="h5p-feedback-dialog">' +
       '<div class="h5p-feedback-inner">' +
-        '<div class="h5p-feedback-text" tabindex="0">' + feedback + '</div>' +
+        '<div class="h5p-feedback-text" aria-hidden="true">' + feedback + '</div>' +
       '</div>' +
     '</div>');
 
@@ -221,12 +220,6 @@ H5P.MultiChoice = function (options, contentId, contentData) {
         if (media.params.sources) {
           // Register task video
           self.setVideo(media);
-        }
-      }
-      else if (type === 'H5P.Audio') {
-        if (media.params.files) {
-          // Register task audio
-          self.setAudio(media);
         }
       }
     }
@@ -338,7 +331,7 @@ H5P.MultiChoice = function (options, contentId, contentData) {
       var num = parseInt($ans.data('id'));
       if (params.behaviour.singleAnswer) {
         // Store answer
-        params.userAnswers = [num];
+        params.userAnswers[0] = num;
 
         // Calculate score
         score = (params.answers[num].correct ? 1 : 0);
@@ -351,10 +344,6 @@ H5P.MultiChoice = function (options, contentId, contentData) {
       }
       else {
         if ($ans.attr('aria-checked') === 'true') {
-          const pos = params.userAnswers.indexOf(num);
-          if (pos !== -1) {
-            params.userAnswers.splice(pos, 1);
-          }
 
           // Do not allow un-checking when retry disabled and auto check
           if (params.behaviour.autoCheck && !params.behaviour.enableRetry) {
@@ -365,7 +354,6 @@ H5P.MultiChoice = function (options, contentId, contentData) {
           $ans.removeClass('h5p-selected').attr('aria-checked', 'false');
         }
         else {
-          params.userAnswers.push(num);
           $ans.addClass('h5p-selected').attr('aria-checked', 'true');
         }
 
@@ -472,6 +460,16 @@ H5P.MultiChoice = function (options, contentId, contentData) {
         self.showCheckSolution(true);
       }
     }
+
+    // check is parent is IV or QS, if so then on open then activity will be started
+    var isEmbedInComplexActivity = this.contentData && this.contentData.parent && this.contentData.parent.contentData
+        && this.contentData.parent.contentData.metadata && this.contentData.parent.contentData.metadata.contentType
+        && ['Interactive Video', 'Brightcove Interactive Video', 'Question Set'].includes(this.contentData.parent.contentData.metadata.contentType);
+
+    if(!isEmbedInComplexActivity && this.activityStartTime === undefined) {
+      // for XAPI duration
+      this.activityStartTime = Date.now();
+    }
   };
 
   this.showAllSolutions = function () {
@@ -569,6 +567,10 @@ H5P.MultiChoice = function (options, contentId, contentData) {
     self.hideButton('show-solution');
     enableInput();
     $myDom.find('.h5p-feedback-available').remove();
+    // for xapi duration
+    if (this.activityStartTime) {
+      this.activityStartTime = Date.now();
+    }
   };
 
   var calculateMaxScore = function () {
@@ -680,17 +682,21 @@ H5P.MultiChoice = function (options, contentId, contentData) {
             l10n: params.confirmCheck,
             instance: self,
             $parentElement: $container
-          },
-          contentData: self.contentData,
-          textIfSubmitting: params.UI.submitAnswerButton,
+          }
         }
       );
     }
 
     // Try Again button
     self.addButton('try-again', params.UI.tryAgainButton, function () {
-      self.resetTask();
-
+      self.showButton('check-answer');
+      self.hideButton('try-again');
+      self.hideButton('show-solution');
+      self.hideSolutions();
+      removeSelections();
+      enableInput();
+      $myDom.find('.h5p-feedback-available').remove();
+      self.answered = false;
       if (params.behaviour.randomAnswers) {
         // reshuffle answers
        var oldIdMap = idMap;
@@ -726,6 +732,27 @@ H5P.MultiChoice = function (options, contentId, contentData) {
   var insertFeedback = function ($e, feedback) {
     // Add visuals
     addFeedback($e, feedback);
+
+    // Add button for readspeakers
+    var $wrap = $('<div/>', {
+      'class': 'h5p-hidden-read h5p-feedback-available',
+      'aria-label': params.UI.feedbackAvailable + '.'
+    });
+    $('<div/>', {
+      'role': 'button',
+      'tabindex': 0,
+      'aria-label': params.UI.readFeedback + '.',
+      appendTo: $wrap,
+      on: {
+        keydown: function (e) {
+          if (e.which === 32) { // Space
+            self.read(feedback);
+            return false;
+          }
+        }
+      }
+    });
+    $wrap.appendTo($e);
   };
 
   /**
@@ -835,16 +862,22 @@ H5P.MultiChoice = function (options, contentId, contentData) {
 
   var calcScore = function () {
     score = 0;
-    for (const answer of params.userAnswers) {
-      const choice = params.answers[answer];
-      const weight = (choice.weight !== undefined ? choice.weight : 1);
-      if (choice.correct) {
-        score += weight;
+    params.userAnswers = [];
+    $('.h5p-answer', $myDom).each(function (idx, el) {
+      var $el = $(el);
+      if ($el.attr('aria-checked') === 'true') {
+        var choice = params.answers[idx];
+        var weight = (choice.weight !== undefined ? choice.weight : 1);
+        if (choice.correct) {
+          score += weight;
+        }
+        else {
+          score -= weight;
+        }
+        var num = parseInt($(el).data('id'));
+        params.userAnswers.push(num);
       }
-      else {
-        score -= weight;
-      }
-    }
+    });
     if (score < 0) {
       score = 0;
     }
@@ -1006,7 +1039,6 @@ H5P.MultiChoice = function (options, contentId, contentData) {
           }
         }
       }
-      calcScore();
     }
   }
 

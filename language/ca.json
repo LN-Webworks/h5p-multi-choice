@@ -57,7 +57,7 @@
             }
           ],
           "label": "Defineix una valoració per cada rang de puntuació",
-          "description": "Feu clic al botó \"Afegeix un rang\" per afegir tants rangs com necessiteu. Exemple: 0-20 % per a puntuació baixa, 21-91 % per a puntuació mitjana, 91-100 % per a puntuació excel·lent",
+          "description": "Feu clic al botó \"Afegeix un rang\" per afegir tants rangs com necessiteu. Exemple: 0-20 % per a puntuació baixa, 21-91 % per a puntuació mitjana, 91-100 % per a puntuació excel·lent.",
           "entity": "rang",
           "field": {
             "fields": [
@@ -82,10 +82,6 @@
           "default": "Verifica"
         },
         {
-          "label": "Submit answer button label",
-          "default": "Submit"
-        },
-        {
           "label": "Etiqueta del botó de mostrar la solució",
           "default": "Mostra la solució"
         },
@@ -104,7 +100,7 @@
         },
         {
           "label": "Hi ha una pista disponible (no es mostra)",
-          "default": "Pista disponible",
+          "default": "Consell disponible",
           "description": "Text d’accessibilitat utilitzat pels altaveus de lectura"
         },
         {
@@ -149,7 +145,7 @@
         },
         {
           "label": "Descripció de la tecnologia d’assistència per al botó \"Torna-ho a provar\"",
-          "default": "Intenta de nou la tasca. Esborra totes les respostes i comença la tasca de nou."
+          "default": "Intenta de nou la tasca. Reajusta totes les respostes i comença la tasca de nou."
         }
       ]
     },

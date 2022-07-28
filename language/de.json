@@ -5,7 +5,7 @@
       "fields": [
         {
           "label": "Typ",
-          "description": "Medium, das wahlweise oberhalb der Aufgabe angezeigt wird."
+          "description": "Optionales Medium, das über der Frage dargestellt wird."
         },
         {
           "label": "Bild-Zoom deaktivieren"
@@ -25,7 +25,7 @@
             "label": "Text"
           },
           {
-            "label": "Richtig"
+            "label": "Richtig!"
           },
           {
             "label": "Tipps und Rückmeldung",
@@ -80,10 +80,6 @@
         {
           "label": "Beschriftung des \"Überprüfen\"-Buttons",
           "default": "Überprüfen"
-        },
-        {
-          "label": "Beschriftung des \"Absenden\"-Buttons",
-          "default": "Submit"
         },
         {
           "label": "Beschriftung des \"Lösung anzeigen\"-Buttons",
@@ -187,7 +183,7 @@
         },
         {
           "label": "Zufällige Reihenfolge der Antworten",
-          "description": "Aktivieren, um die Antworten in zufälliger Reihenfolge anzuzeigen."
+          "description": "Aktivieren, um die Fragen in zufälliger Reihenfolge anzuzeigen."
         },
         {
           "label": "Lösung wird erst angezeigt, wenn eine Antwort eingegeben wurde."
